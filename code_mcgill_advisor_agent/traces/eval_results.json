@@ -1,0 +1,172 @@
+[
+  {
+    "case_id": "EVAL-01",
+    "description": "Happy path: eligible student requests ML/analytics courses",
+    "passed": true,
+    "notes": "MGSC401 recommended; no advisor approval required.",
+    "output": {
+      "courses": [
+        "MGSC401",
+        "MGSC430"
+      ],
+      "requires_approval": false,
+      "risks": [
+        "No new machine learning or analytics courses available for the next semester.",
+        "All relevant courses matching the query have been completed: MGSC301.",
+        "MGSC415 not recommended because prerequisites are missing: MGSC401.",
+        "MGSC499 not recommended because prerequisites are missing: MGSC401."
+      ],
+      "flags": []
+    },
+    "error": null
+  },
+  {
+    "case_id": "EVAL-02",
+    "description": "Missing prerequisite: MGSC415 requires MGSC401 which is not completed",
+    "passed": true,
+    "notes": "MGSC415 correctly excluded; risk about missing MGSC401 returned.",
+    "output": {
+      "courses": [],
+      "requires_approval": false,
+      "risks": [
+        "Missing prerequisite MGSC401 for MGSC415.",
+        "MGSC415 not recommended because prerequisites are missing: MGSC401."
+      ],
+      "flags": []
+    },
+    "error": null
+  },
+  {
+    "case_id": "EVAL-03",
+    "description": "Guardrail fires: probation student at 12-credit cap is blocked",
+    "passed": true,
+    "notes": "Guardrail correctly blocked the request before any tool calls.",
+    "output": {},
+    "error": "[PROBATION_OVERLOAD_GUARDRAIL TRIGGERED] This request was blocked. The student must speak with a human advisor before enrolling in additional courses. Detail: Guardrail InputGuardrail triggered tripwire"
+  },
+  {
+    "case_id": "EVAL-04",
+    "description": "Capstone eligible: GPA 3.2 meets the 3.0 minimum",
+    "passed": true,
+    "notes": "MGSC499 recommended; GPA 3.2 \u2265 3.0, no approval required.",
+    "output": {
+      "courses": [
+        "MGSC499"
+      ],
+      "requires_approval": false,
+      "risks": [
+        "MGSC430 removed because it was not relevant to the student's request."
+      ],
+      "flags": []
+    },
+    "error": null
+  },
+  {
+    "case_id": "EVAL-05",
+    "description": "Edge: student requests a course they already completed",
+    "passed": true,
+    "notes": "MGSC301 correctly excluded; agent did not recommend a completed course.",
+    "output": {
+      "courses": [],
+      "requires_approval": false,
+      "risks": [
+        "Student has already completed MGSC301; retaking is not advisable.",
+        "MGSC430 removed because it was not relevant to the student's request.",
+        "MGSC450 removed because it was not relevant to the student's request.",
+        "MGSC499 removed because it was not relevant to the student's request."
+      ],
+      "flags": []
+    },
+    "error": null
+  },
+  {
+    "case_id": "EVAL-06",
+    "description": "Edge: query matches nothing in the course catalog",
+    "passed": true,
+    "notes": "No courses recommended; risks explain the empty result.",
+    "output": {
+      "courses": [],
+      "requires_approval": false,
+      "risks": [
+        "No relevant neuroscience or cognitive science courses were found in the search results."
+      ],
+      "flags": []
+    },
+    "error": null
+  },
+  {
+    "case_id": "EVAL-07",
+    "description": "Approval required: prereqs met but GPA 1.8 is below capstone minimum",
+    "passed": true,
+    "notes": "requires_advisor_approval=True; capstone_gpa_below_minimum flag present.",
+    "output": {
+      "courses": [
+        "MGSC499"
+      ],
+      "requires_approval": true,
+      "risks": [
+        "Student is on probation with a GPA of 1.8, which is below the minimum requirement of 3.0 for MGSC499."
+      ],
+      "flags": [
+        "capstone_gpa_below_minimum"
+      ]
+    },
+    "error": null
+  },
+  {
+    "case_id": "EVAL-08",
+    "description": "Guardrail boundary: probation student at 3 credits \u2014 guardrail must NOT fire",
+    "passed": true,
+    "notes": "Guardrail did not fire; agent ran and returned a recommendation.",
+    "output": {
+      "courses": [
+        "MGSC401"
+      ],
+      "requires_approval": false,
+      "risks": [
+        "No new analytics courses found that match the search criteria and prerequisites.",
+        "MGSC430 not recommended because prerequisites are missing: MGSC310.",
+        "MGSC499 not recommended because prerequisites are missing: MGSC401, MGSC310."
+      ],
+      "flags": []
+    },
+    "error": null
+  },
+  {
+    "case_id": "EVAL-09",
+    "description": "Mixed eligibility: one eligible course, one blocked by missing prereq",
+    "passed": true,
+    "notes": "MGSC401 recommended; MGSC415 excluded; risk surfaced.",
+    "output": {
+      "courses": [
+        "MGSC401"
+      ],
+      "requires_approval": false,
+      "risks": [
+        "Cannot enroll in MGSC415 because prerequisite MGSC401 is missing.",
+        "MGSC430 removed because it was not relevant to the student's request."
+      ],
+      "flags": []
+    },
+    "error": null
+  },
+  {
+    "case_id": "EVAL-10",
+    "description": "Approval required: course has no available seats",
+    "passed": true,
+    "notes": "requires_advisor_approval=True; no_seats_available flag present.",
+    "output": {
+      "courses": [
+        "FINE410"
+      ],
+      "requires_approval": true,
+      "risks": [
+        "Course FINE410 has no available seats, requires advisor approval to enroll."
+      ],
+      "flags": [
+        "no_seats_available"
+      ]
+    },
+    "error": null
+  }
+]

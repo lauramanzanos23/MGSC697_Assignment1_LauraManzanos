@@ -1,0 +1,169 @@
+[
+  {
+    "scenario_id": "DEMO-01",
+    "label": "Happy path \u2014 eligible student requests ML courses",
+    "student_id": "S001",
+    "message": "I want to take machine learning and analytics courses next semester.",
+    "blocked_by_guardrail": false,
+    "output": {
+      "recommended_courses": [
+        {
+          "course_code": "MGSC401",
+          "course_name": "Predictive Analytics",
+          "credits": 3,
+          "reason": "Prerequisites met and relevant to machine learning and analytics."
+        },
+        {
+          "course_code": "MGSC430",
+          "course_name": "Big Data and Cloud Analytics",
+          "credits": 3,
+          "reason": "Prerequisites met and relevant to machine learning and analytics."
+        }
+      ],
+      "risks": [
+        "MGSC415 cannot be taken due to missing prerequisite MGSC401.",
+        "MGSC499 cannot be taken due to missing prerequisite MGSC401."
+      ],
+      "policy_flags": [],
+      "requires_advisor_approval": false,
+      "approval_reason": null,
+      "total_recommended_credits": 6,
+      "summary": "Alice Chen can enroll in MGSC401 and MGSC430 as they meet her prerequisites and are relevant to her interest in machine learning and analytics."
+    },
+    "guardrail_message": null
+  },
+  {
+    "scenario_id": "DEMO-02",
+    "label": "Guardrail fires \u2014 probation student at credit cap",
+    "student_id": "S002",
+    "message": "I want to add three more courses next semester.",
+    "blocked_by_guardrail": true,
+    "output": null,
+    "guardrail_message": "[PROBATION_OVERLOAD_GUARDRAIL TRIGGERED] This request was blocked. The student must speak with a human advisor before enrolling in additional courses. Detail: Guardrail InputGuardrail triggered tripwire"
+  },
+  {
+    "scenario_id": "DEMO-03",
+    "label": "Capstone eligibility \u2014 GPA 3.2 passes the 3.0 threshold",
+    "student_id": "S003",
+    "message": "I want to take the Analytics Capstone (MGSC499) next semester.",
+    "blocked_by_guardrail": false,
+    "output": {
+      "recommended_courses": [
+        {
+          "course_code": "MGSC499",
+          "course_name": "Capstone: Analytics Project",
+          "credits": 6,
+          "reason": "This is the desired course and all prerequisites are fulfilled."
+        }
+      ],
+      "risks": [
+        "MGSC430 removed because it was not relevant to the student's request."
+      ],
+      "policy_flags": [],
+      "requires_advisor_approval": false,
+      "approval_reason": null,
+      "total_recommended_credits": 6,
+      "summary": "Recommended eligible course(s): MGSC499 (Capstone: Analytics Project)."
+    },
+    "guardrail_message": null
+  },
+  {
+    "scenario_id": "DEMO-04",
+    "label": "Missing prerequisite \u2014 agent correctly blocks MGSC415",
+    "student_id": "S001",
+    "message": "Can I take MGSC415 Machine Learning for Business this semester?",
+    "blocked_by_guardrail": false,
+    "output": {
+      "recommended_courses": [],
+      "risks": [
+        "You have not completed the prerequisite MGSC401 for MGSC415.",
+        "You have not completed the prerequisite MGSC401 for MGSC499.",
+        "MGSC430 removed because it was not relevant to the student's request.",
+        "MGSC415 not recommended because prerequisites are missing: MGSC401."
+      ],
+      "policy_flags": [],
+      "requires_advisor_approval": false,
+      "approval_reason": null,
+      "total_recommended_credits": 0,
+      "summary": "No eligible courses could be recommended from the fixture catalog for this request."
+    },
+    "guardrail_message": null
+  },
+  {
+    "scenario_id": "DEMO-05",
+    "label": "No matching courses \u2014 query outside catalog",
+    "student_id": "S001",
+    "message": "I want to study neuroscience and cognitive science courses.",
+    "blocked_by_guardrail": false,
+    "output": {
+      "recommended_courses": [],
+      "risks": [
+        "No matching courses found for 'neuroscience' or 'cognitive science'.",
+        "Course codes could not be verified due to catalog mismatches."
+      ],
+      "policy_flags": [],
+      "requires_advisor_approval": false,
+      "approval_reason": null,
+      "total_recommended_credits": 0,
+      "summary": "No eligible courses could be recommended from the fixture catalog for this request."
+    },
+    "guardrail_message": null
+  },
+  {
+    "scenario_id": "DEMO-06",
+    "label": "Approval required \u2014 GPA below capstone minimum",
+    "student_id": "S004",
+    "message": "I want to take the Analytics Capstone MGSC499.",
+    "blocked_by_guardrail": false,
+    "output": {
+      "recommended_courses": [
+        {
+          "course_code": "MGSC499",
+          "course_name": "Capstone: Analytics Project",
+          "credits": 6,
+          "reason": "Final capstone project for Analytics program and prerequisites are met"
+        }
+      ],
+      "risks": [
+        "Your GPA is below the required minimum for enrollment in MGSC499",
+        "MGSC430 removed because it was not relevant to the student's request."
+      ],
+      "policy_flags": [
+        {
+          "rule_name": "capstone_gpa_below_minimum",
+          "description": "MGSC499 requires a cumulative GPA of 3.0. Students below this threshold need written advisor sign-off before the registrar will process the enrollment.",
+          "requires_advisor_approval": true
+        }
+      ],
+      "requires_advisor_approval": true,
+      "approval_reason": "Your GPA is below the 3.0 requirement for MGSC499, requiring advisor approval.",
+      "total_recommended_credits": 6,
+      "summary": "Recommended eligible course(s): MGSC499 (Capstone: Analytics Project). Human advisor approval is required before enrollment."
+    },
+    "guardrail_message": null
+  },
+  {
+    "scenario_id": "DEMO-07",
+    "label": "First-semester student \u2014 only intro courses available",
+    "student_id": "S005",
+    "message": "What courses can I take as a first-year student?",
+    "blocked_by_guardrail": false,
+    "output": {
+      "recommended_courses": [
+        {
+          "course_code": "MGSC301",
+          "course_name": "Introduction to Analytics",
+          "credits": 3,
+          "reason": "Eligible and fits program. Available for first-year students."
+        }
+      ],
+      "risks": [],
+      "policy_flags": [],
+      "requires_advisor_approval": false,
+      "approval_reason": null,
+      "total_recommended_credits": 3,
+      "summary": "Emma Wilson is recommended to take MGSC301: Introduction to Analytics. This course is suitable for a first-year student and meets all eligibility requirements."
+    },
+    "guardrail_message": null
+  }
+]
